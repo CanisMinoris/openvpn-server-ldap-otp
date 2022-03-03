@@ -1,0 +1,2 @@
+#!/bin/bash
+ssh -oStrictHostKeyChecking=no -l $MKTIK_USER -p22 -i /etc/openvpn/mktik-cert $MKTIK_IP "$1"
