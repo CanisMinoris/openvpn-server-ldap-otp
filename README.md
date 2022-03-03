@@ -66,8 +66,8 @@ Configuration is via environmental variables.  Here's a list, along with the def
  * `FAIL2BAN_ENABLED` (false):  Set to `true` to enable the fail2ban daemon (protection against brute force attacks). This will also set `LOG_TO_STDOUT` to `false`.
  * `FAIL2BAN_MAXRETRIES` (3):  The number of attempts that fail2ban allows before banning an ip address.
  
- * `MKTIK_USER`: User on Mikrotik
- * `MKTIK_IP`: Mikrotik IP Address
+ * `MKTIK_USER` (_undefined_): User on Mikrotik
+ * `MKTIK_IP` (_undefined_): Mikrotik IP Address
 ## Data persistence
 
 Important configuration and data is kept in the container's `/etc/openvpn` directory, so this path should be mounted as a volume or a bind mount.  See the [Docker documentation](https://docs.docker.com/storage/volumes/) for more information.  In the example below, we mount it as a bind mount to a directory on the host.
