@@ -1,12 +1,9 @@
-#!/bin/bash
+!/bin/bash
 
-cat <<EOF >> /etc/fail2ban/filter.d/openvpn.local
+fail2banopenvpnfilter=/etc/fail2ban/filter.d/openvpn.local
+if [ ! -f "$fail2banopenvpnfilter" ]; then
+cat <<EOF >> $fail2banopenvpnfilter
 [Definition]
-
-# Example messages (other matched messages not seen in the testing server's logs):
-# Fri Sep 23 11:55:36 2016 TLS Error: incoming packet authentication failed from [AF_INET]59.90.146.160:51223
-# Thu Aug 25 09:36:02 2016 117.207.115.143:58922 TLS Error: TLS handshake failed
-
 failregex =  TLS Error: incoming packet authentication failed from \[AF_INET\]<HOST>:\d+$
              <HOST>:\d+ Connection reset, restarting
              <HOST>:\d+ TLS Auth Error
@@ -15,24 +12,44 @@ failregex =  TLS Error: incoming packet authentication failed from \[AF_INET\]<H
 
 ignoreregex =
 EOF
+fi
 
-
-cat <<EOF >> /etc/fail2ban/jail.d/openvpn.conf
+fail2banopenvpnjail=/etc/fail2ban/jail.d/openvpn.conf
+if [ ! -f "$fail2banopenvpnjail" ]; then
+cat <<EOF >> $fail2banopenvpnjail
 [openvpn]
 enabled  = $FAIL2BAN_ENABLED
-port     = 1194
-protocol = $OVPN_PROTOCOL
 filter   = openvpn
+action = mikrotik
 logpath  = $LOG_FILE
 maxretry = $FAIL2BAN_MAXRETRIES
 EOF
+fi
 
-cat <<EOF >> /etc/fail2ban/fail2ban.local
+fail2banopenvpnactionmktik=/etc/fail2ban/action.d/mikrotik.conf
+if [ ! -f "$fail2banopenvpnactionmktik" ]; then
+cat <<EOF >> $fail2banopenvpnactionmktik
+[Definition]
+actionstart =
+actionstop =
+actioncheck =
+actionban = mikrotik ":ip firewall address-list add list=fail2ban address=<ip>"
+actionunban =
+EOF
+fi
+
+fail2bandefinition=/etc/fail2ban/fail2ban.local
+if [ ! -f "$fail2bandefinition" ]; then
+cat <<EOF >> $fail2bandefinition
 [Definition]
 logtarget = /proc/1/fd/1
 EOF
+fi
 
 echo "Starting fail2ban..."
 touch /var/log/auth.log
-mkdir /var/run/fail2ban
+
+fail2banvarrun=/var/run/fail2ban
+if [ ! -d "$fail2banvarrun" ]; then mkdir $fail2banvarrun; fi
+
 /usr/bin/fail2ban-server -xb --logtarget=stdout start
