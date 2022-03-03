@@ -14,6 +14,7 @@ RUN apt-get update && \
             net-tools \
             nslcd \
             openssl \
+            openssh-server\            
             openvpn && \
     apt-get autoremove && \
     rm -rf /var/lib/apt/lists/* && \
